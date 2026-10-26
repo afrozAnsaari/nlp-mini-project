@@ -79,12 +79,15 @@ def load_pipeline(task_name: str):
     print(f"=======================================================")
 
     t0 = time.time()
-    pipe = pipeline(
-        task=pipeline_task,
-        model=model_id,
-        device=device,
-        aggregation_strategy="simple" if pipeline_task == "token-classification" else None,
-    )
+    pipe_kwargs = {
+        "task": pipeline_task,
+        "model": model_id,
+        "device": device,
+    }
+    if pipeline_task == "token-classification":
+        pipe_kwargs["aggregation_strategy"] = "simple"
+
+    pipe = pipeline(**pipe_kwargs)
     load_time = time.time() - t0
     print(f"[✓] Pipeline ready in {load_time:.2f} seconds.")
     return pipe, task_config
